@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup Form</title>
+    <style>
+        .details {
+            display: none;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        .hidden-form {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Q1</h1>
+    <h2>Signup Form</h2>
+    <form id="signupForm" onsubmit="submitForm()">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+        <br>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+        <br>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+        <br>
+
+        <button type="submit">Submit</button>
+    </form>
+
+    <h3>Form Data:</h3>
+    <div id="formData"></div>
+
+
+    <h1>Q2</h1>
+    <div id="itemDetails">
+        <h2>Item Title</h2>
+        <p class="summary">Summary of the item details. Only a part of the content is visible.</p>
+        <p class="details">Full details of the item. This content is hidden initially.</p>
+        <button onclick="toggleDetails()" id="toggle">Read more</button>
+    </div>
+
+    <h1>Q3</h1>
+    <form id="studentForm">
+        <label for="studentName">Name:</label>
+        <input type="text" id="studentName" name="name" required>
+
+        <label for="studentAge">Age:</label>
+        <input type="number" id="studentAge" name="age" required>
+
+        <label for="studentGrade">Grade:</label>
+        <input type="text" id="studentGrade" name="grade" required>
+
+        <button type="button" onclick="addStudent()">Add Student</button>
+    </form>
+
+    <br>
+
+    <table id="studentTable">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Age</th>
+                <th>Grade</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <form id="editForm" class="hidden-form">
+        <label for="editName">Edit Name:</label>
+        <input type="text" id="editName" name="editName" required>
+
+        <label for="editAge">Edit Age:</label>
+        <input type="number" id="editAge" name="editAge" required>
+
+        <label for="editGrade">Edit Grade:</label>
+        <input type="text" id="editGrade" name="editGrade" required>
+
+        <button type="button" onclick="saveEdit()">Save</button>
+        <button type="button" onclick="cancelEdit()">Cancel</button>
+    </form>
+    <script>
+        function submitForm() {
+            var name = document.getElementById("name").value;
+            var email = document.getElementById("email").value;
+            var password = document.getElementById("password").value;
+
+            var formDataDiv = document.getElementById("formData");
+            formDataDiv.innerHTML = "<p><strong>Name:</strong> " + name + "</p>" +
+                                    "<p><strong>Email:</strong> " + email + "</p>" +
+                                    "<p><strong>Password:</strong> " + password + "</p>";
+        }
+
+        function toggleDetails() {
+            var summary = document.querySelector('.summary');
+            var fullDetails = document.querySelector('.details');
+            var button = document.getElementById('toggle');
+
+            if (fullDetails.style.display === 'none') {
+                fullDetails.style.display = 'block';
+                summary.style.display = 'none';
+                button.textContent = 'Read less';
+            } else {
+                fullDetails.style.display = 'none';
+                summary.style.display = 'block';
+                button.textContent = 'Read more';
+            }
+        }
+
+
+        function addStudent() {
+            var name = document.getElementById("studentName").value;
+            var age = document.getElementById("studentAge").value;
+            var grade = document.getElementById("studentGrade").value;
+
+            var table = document.getElementById("studentTable").getElementsByTagName('tbody')[0];
+            var newRow = table.insertRow(table.rows.length);
+
+            var cell1 = newRow.insertCell(0);
+            var cell2 = newRow.insertCell(1);
+            var cell3 = newRow.insertCell(2);
+            var cell4 = newRow.insertCell(3);
+
+            cell1.innerHTML = name;
+            cell2.innerHTML = age;
+            cell3.innerHTML = grade;
+
+            var deleteButton = document.createElement("button");
+            deleteButton.textContent = "Delete";
+            deleteButton.onclick = function() {
+                deleteRow(newRow);
+            };
+
+            var editButton = document.createElement("button");
+            editButton.textContent = "Edit";
+            editButton.onclick = function() {
+                editRow(newRow);
+            };
+
+            cell4.appendChild(deleteButton);
+            cell4.appendChild(editButton);
+
+            document.getElementById("studentForm").reset();
+        }
+
+        function deleteRow(row) {
+            var table = document.getElementById("studentTable").getElementsByTagName('tbody')[0];
+            table.deleteRow(row.rowIndex);
+        }
+
+        function editRow(row) {
+            var editForm = document.getElementById("editForm");
+            var name = row.cells[0].innerHTML;
+            var age = row.cells[1].innerHTML;
+            var grade = row.cells[2].innerHTML;
+
+            document.getElementById("editName").value = name;
+            document.getElementById("editAge").value = age;
+            document.getElementById("editGrade").value = grade;
+
+            editForm.classList.remove("hidden-form");
+            editForm.dataset.rowIndex = row.rowIndex;
+        }
+
+        function saveEdit() {
+            var rowIndex = document.getElementById("editForm").dataset.rowIndex;
+            var table = document.getElementById("studentTable").getElementsByTagName('tbody')[0];
+            var row = table.rows[rowIndex - 1];
+
+            row.cells[0].innerHTML = document.getElementById("editName").value;
+            row.cells[1].innerHTML = document.getElementById("editAge").value;
+            row.cells[2].innerHTML = document.getElementById("editGrade").value;
+
+            cancelEdit();
+        }
+
+        function cancelEdit() {
+            var editForm = document.getElementById("editForm");
+            editForm.classList.add("hidden-form");
+            editForm.reset();
+        }
+    </script>
+</body>
+</html>
